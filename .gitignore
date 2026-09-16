@@ -1,0 +1,7 @@
+# Local, NON-anonymous audit output — never publish
+aaltodoc_audit_LOCAL.csv
+*_audit_*.csv
+# LaTeX build artifacts
+*.aux
+*.log
+*.out

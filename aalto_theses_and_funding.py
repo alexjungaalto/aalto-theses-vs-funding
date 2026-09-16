@@ -27,9 +27,14 @@ the exported data are anonymised (one dot per supervisor, no labels).
 3. (--tikz/--png) Per-supervisor lifetime thesis count, estimated by searching
    Aaltodoc, Aalto's DSpace repository of completed theses, for each supervisor:
        GET https://aaltodoc.aalto.fi/server/api/discover/search/objects
-   matching dc.contributor.supervisor / .advisor. This is the default X-axis of
-   the scatter plot (the MyCourses figure only counts theses *currently* in
-   supervision); use --x-metric current to plot the MyCourses figure instead.
+   matching dc.contributor.supervisor (and .advisor with --include-advisor).
+   The repository records the same person under several name forms (short/long
+   given names, title/affiliation suffixes, spacing quirks), so for each
+   supervisor we discover all forms stored for their surname, merge the ones
+   whose first name is prefix-compatible in either direction, and count the
+   deduped union. Pass --audit-names to dump exactly which forms were merged.
+   This is the default X-axis of the scatter (the MyCourses figure only counts
+   theses *currently* in supervision); use --x-metric current for that instead.
 
 Usage:
     python3 aalto_theses_and_funding.py
@@ -40,8 +45,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
+import unicodedata
 import urllib.parse
 import urllib.request
 from collections import defaultdict
@@ -309,45 +316,161 @@ def fetch_supervisor_funding(first: str, last: str) -> dict:
     }
 
 
-def fetch_aaltodoc_thesis_count(
-    first: str, last: str, include_advisor: bool = False
-) -> int:
-    """
-    Estimate a supervisor's lifetime thesis count from Aaltodoc (Aalto's DSpace
-    repository of completed theses).
+_SUP_FIELD = "dc.contributor.supervisor"
+_ADV_FIELD = "dc.contributor.advisor"
 
-    Query form: dc.contributor.supervisor:(<last tokens> AND <first>*)
-      * supervisor field only by default — the "responsible professor" role,
-        which matches how the self-maintained ml-theses.org counts supervision.
-        Pass include_advisor=True to also count dc.contributor.advisor
-        (instructor) roles as a deduped union.
-      * a trailing wildcard on the first name (Alex*) captures short/long name
-        variants recorded in the metadata (e.g. a "Sam" / "Samuel" or
-        "Alex" / "Alexander" split), which an exact phrase would otherwise
-        divide across two records. Validated against a supervisor's own public
-        thesis list: this query reproduced that hand-maintained figure.
 
-    Without a first name it falls back to last-name only (may merge namesakes).
+def _ascii_lower(s: str) -> str:
+    """Fold to lowercase ASCII (drops diacritics), for name comparison."""
+    return (
+        unicodedata.normalize("NFKD", s)
+        .encode("ascii", "ignore")
+        .decode()
+        .lower()
+        .strip()
+    )
+
+
+def _name_key(firstname: str) -> str:
     """
-    if not last:
-        return 0
-    terms = " AND ".join(last.split())
-    if first:
-        terms += f" AND {first}*"
-    fields = ["dc.contributor.supervisor"]
-    if include_advisor:
-        fields.append("dc.contributor.advisor")
-    query = " OR ".join(f"{fld}:({terms})" for fld in fields)
+    Reduce a given-name string to a clean comparison key: ASCII-fold, take the
+    first name only, keep letters and internal hyphens, and stop at the first
+    packing/punctuation character. So:
+        "Alexander, Prof., Aalto ..." -> "alexander"
+        "Samuel|Aurell"               -> "samuel"    (packed co-supervisor split off)
+        "Sergiy.,"                    -> "sergiy"
+        "Jari-Pekka"                  -> "jari-pekka" (hyphen kept: compound name)
+    """
+    tok = _ascii_lower(firstname).lstrip()
+    out = []
+    for ch in tok:
+        if ch.isalpha() or ch == "-":
+            out.append(ch)
+        else:
+            break
+    return "".join(out).strip("-")
+
+
+def _first_compatible(target_key: str, form_key: str) -> bool:
+    """
+    True only when two name keys are the SAME name, one possibly truncated:
+    "alex" ~ "alexander", "chris" ~ "christopher", "russel" ~ "russell". It
+    deliberately does NOT merge:
+      * bare single-letter initials ("a" vs "ari") — too ambiguous, and
+      * added name components ("jari" vs "jari-pekka") — a different identity,
+        detected because the extra characters begin with a hyphen.
+    It also cannot bridge non-prefix nicknames (Bob/Robert). Merges are always
+    reported in the audit so any residual false merge is visible.
+    """
+    a, b = target_key, form_key
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    short, long = (a, b) if len(a) <= len(b) else (b, a)
+    if len(short) < 2:            # bare initial: refuse to merge
+        return False
+    if not long.startswith(short):
+        return False
+    return long[len(short):][:1].isalpha()   # reject hyphen/component additions
+
+
+def _aaltodoc_get(query: str, size: int = 1, page: int = 0) -> dict:
     url = (
         f"{AALTODOC_API}?query={urllib.parse.quote(query)}"
-        f"&dsoType=item&size=1"
+        f"&dsoType=item&size={size}&page={page}"
     )
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-        result = json.loads(resp.read().decode("utf-8"))
-    return int(
-        result["_embedded"]["searchResult"]["page"]["totalElements"]
-    )
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def _discover_surname_forms(
+    last: str, fields: tuple, max_pages: int = 15
+) -> tuple[set, bool]:
+    """
+    Enumerate the distinct given-name forms Aaltodoc actually records for a
+    surname, by scanning the supervisor/advisor fields. Returns (set of first
+    forms, truncated?). `truncated` is True if the surname has more matching
+    items than max_pages*100 (rare) and discovery may be incomplete.
+    """
+    nlast = _ascii_lower(last)
+    forms: set = set()
+    truncated = False
+    for fld in fields:
+        page = 0
+        query = f"{fld}:({last})"
+        while True:
+            data = _aaltodoc_get(query, size=100, page=page)
+            sr = data["_embedded"]["searchResult"]
+            for obj in sr["_embedded"].get("objects", []):
+                md = obj["_embedded"]["indexableObject"]["metadata"]
+                for v in md.get(fld, []):
+                    val = v["value"]
+                    if "," in val:
+                        surname, rest = val.split(",", 1)
+                    else:  # e.g. "Karhunen Juha, Prof."
+                        toks = val.split()
+                        surname = toks[0] if toks else ""
+                        rest = " ".join(toks[1:])
+                    key = _name_key(rest)
+                    surtoks = [_ascii_lower(t) for t in surname.replace("-", " ").split()]
+                    if key and nlast in surtoks:
+                        forms.add(key)
+            total_pages = sr["page"]["totalPages"]
+            page += 1
+            if page >= total_pages:
+                break
+            if page >= max_pages:
+                truncated = True
+                break
+    return forms, truncated
+
+
+def fetch_aaltodoc_thesis_count(
+    first: str, last: str, include_advisor: bool = False
+) -> tuple[int, list, bool]:
+    """
+    Estimate a supervisor's lifetime thesis count from Aaltodoc (Aalto's DSpace
+    repository of completed theses), honestly merging first-name variants.
+
+    Method:
+      1. Discover every given-name form the repository stores for this surname
+         (handles title/affiliation suffixes, missing commas, spacing).
+      2. Keep the forms prefix-compatible with the target first name, in BOTH
+         directions (so short->long AND long->short are covered).
+      3. Count the deduped union of those forms as a phrase query.
+
+    Supervisor field only by default (the "responsible professor" role, which
+    matches how the self-maintained ml-theses.org counts supervision); pass
+    include_advisor=True to also count advisor/instructor roles.
+
+    Returns (count, merged_first_forms, truncated). merged_first_forms lets the
+    caller audit exactly which name variants were combined.
+    """
+    if not last:
+        return 0, [], False
+    fields = (_SUP_FIELD, _ADV_FIELD) if include_advisor else (_SUP_FIELD,)
+    target = _name_key(first)
+    forms, truncated = _discover_surname_forms(last, fields)
+    kept = sorted(f for f in forms if _first_compatible(target, f))
+    if not kept:
+        # Discovery found no compatible form; fall back to an exact phrase on
+        # the MyCourses name so we still return a best-effort number.
+        if not first:
+            return 0, [], truncated
+        query = " OR ".join(f'{fld}:"{last}, {first}"' for fld in fields)
+        cnt = _aaltodoc_get(query)["_embedded"]["searchResult"]["page"]["totalElements"]
+        return int(cnt), [target] if target else [], truncated
+    # Count the deduped union. A hyphenated key ("jari-pekka") becomes an
+    # ordered phrase ("jari pekka") so it matches the compound name but not the
+    # bare "Jari"; a simple key matches its token anywhere in the field value.
+    clauses = [
+        f'{fld}:"{last}, {form.replace("-", " ")}"' for form in kept for fld in fields
+    ]
+    query = " OR ".join(clauses)
+    cnt = _aaltodoc_get(query)["_embedded"]["searchResult"]["page"]["totalElements"]
+    return int(cnt), kept, truncated
 
 
 def build_supervisor_points(
@@ -356,9 +479,10 @@ def build_supervisor_points(
     """
     Flatten faculties into supervisor records and look up funding for each.
 
-    Names are used only to query the external services and are dropped from the
-    result: each returned record is anonymous — (faculty, theses_current,
-    theses_aaltodoc, grants, funding_eur).
+    Returns (points, audit). `points` are anonymous — names are used only to
+    query the external services and never appear in a point. `audit` is a
+    parallel, NAMED list (surname, first name, merged variant forms) for local
+    verification; it is never written to the anonymised outputs.
     """
     queries = []
     for dept, info in theses["faculties"].items():
@@ -368,28 +492,44 @@ def build_supervisor_points(
                 {"faculty": dept, "theses": person["theses"], "first": first, "last": last}
             )
 
-    def _lookup(q: dict) -> dict:
+    def _lookup(q: dict) -> tuple:
         try:
             fund = fetch_supervisor_funding(q["first"], q["last"])
         except Exception:  # noqa: BLE001 - keep the point, mark funding unknown
             fund = {"grants": 0, "funding_eur": 0.0}
         try:
-            aaltodoc = fetch_aaltodoc_thesis_count(
+            adoc, forms, truncated = fetch_aaltodoc_thesis_count(
                 q["first"], q["last"], include_advisor
             )
         except Exception:  # noqa: BLE001 - keep the point, mark count unknown
-            aaltodoc = 0
-        # Return an anonymised record only: no names leave this function.
-        return {
+            adoc, forms, truncated = 0, [], False
+        # Anonymised record: no names, but keep how many name-forms were merged
+        # and whether discovery was truncated, so the estimate stays honest.
+        point = {
             "faculty": q["faculty"],
-            "theses_current": q["theses"],   # currently in supervision (MyCourses)
-            "theses_aaltodoc": aaltodoc,     # lifetime completed (Aaltodoc)
+            "theses_current": q["theses"],       # currently supervised (MyCourses)
+            "theses_aaltodoc": adoc,             # lifetime completed (Aaltodoc)
+            "aaltodoc_name_forms": len(forms),   # # of first-name variants merged
+            "aaltodoc_truncated": truncated,
             "grants": fund["grants"],
             "funding_eur": fund["funding_eur"],
         }
+        # Separate, NAMED audit row (never written to the anonymised outputs).
+        audit = {
+            "last": q["last"],
+            "first": q["first"],
+            "faculty": q["faculty"],
+            "theses_aaltodoc": adoc,
+            "merged_first_forms": forms,
+            "truncated": truncated,
+        }
+        return point, audit
 
     with ThreadPoolExecutor(max_workers=workers) as ex:
-        return list(ex.map(_lookup, queries))
+        results = list(ex.map(_lookup, queries))
+    points = [r[0] for r in results]
+    audit = [r[1] for r in results]
+    return points, audit
 
 
 # A small, colour-blind-friendly palette (name, pgf RGB, matplotlib hex, mark).
@@ -586,6 +726,14 @@ def main() -> int:
         "supervisor (responsible professor). Default: supervisor only, which "
         "matches how ml-theses.org counts supervision.",
     )
+    ap.add_argument(
+        "--audit-names",
+        metavar="PATH",
+        default=None,
+        help="Write a LOCAL, NON-ANONYMOUS CSV (name + which Aaltodoc first-name "
+        "variants were merged + count) so the variant merging can be checked. "
+        "Do not publish this file.",
+    )
     args = ap.parse_args()
 
     try:
@@ -606,14 +754,35 @@ def main() -> int:
     points = None
     if args.tikz or args.png:
         print("\nLooking up per-supervisor funding on research.fi ...", flush=True)
-        points = build_supervisor_points(theses, include_advisor=args.include_advisor)
+        points, audit = build_supervisor_points(
+            theses, include_advisor=args.include_advisor
+        )
         matched = sum(1 for p in points if p["funding_eur"] > 0)
         total_aaltodoc = sum(p["theses_aaltodoc"] for p in points)
+        merged = sum(1 for p in points if p["aaltodoc_name_forms"] > 1)
+        truncated = sum(1 for p in points if p["aaltodoc_truncated"])
         print(
             f"  Aaltodoc: {total_aaltodoc:,} completed theses across "
             f"{len(points)} supervisors "
             f"(vs {theses['total_theses']} currently in supervision)"
         )
+        print(
+            f"  name-variant merging: {merged} supervisor(s) had >1 first-name "
+            f"form combined; {truncated} had truncated discovery"
+        )
+        if args.audit_names:
+            with open(args.audit_names, "w", encoding="utf-8", newline="") as fh:
+                w = csv.writer(fh)
+                w.writerow(
+                    ["last", "first", "faculty", "theses_aaltodoc",
+                     "merged_first_forms", "truncated"]
+                )
+                for a in sorted(audit, key=lambda r: -r["theses_aaltodoc"]):
+                    w.writerow([
+                        a["last"], a["first"], a["faculty"], a["theses_aaltodoc"],
+                        " | ".join(a["merged_first_forms"]), a["truncated"],
+                    ])
+            print(f"  Wrote NON-ANONYMOUS audit {args.audit_names} (do not publish)")
         if args.matched_only:
             dropped = len(points) - matched
             points = [p for p in points if p["funding_eur"] > 0]
