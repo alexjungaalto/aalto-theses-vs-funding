@@ -1,0 +1,452 @@
+{
+  "theses_per_faculty": {
+    "source": "https://mycourses.aalto.fi/mod/page/view.php?id=1074107",
+    "faculties": {
+      "Computer Science (CS)": {
+        "supervisors": 78,
+        "theses": 199
+      },
+      "ELEC": {
+        "supervisors": 27,
+        "theses": 58
+      }
+    },
+    "total_theses": 257,
+    "total_supervisors": 105
+  },
+  "funding": {
+    "source": "https://researchfi-api-production.2.rahtiapp.fi/portalapi/funding/_search",
+    "query": "(all granted funding)",
+    "grant_count": 23724,
+    "total_eur": 28489747715.71875
+  },
+  "supervisors": [
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 35,
+      "grants": 3,
+      "funding_eur": 3228722.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 8,
+      "theses_aaltodoc": 127,
+      "grants": 7,
+      "funding_eur": 2485300.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 3,
+      "theses_aaltodoc": 7,
+      "grants": 3,
+      "funding_eur": 886284.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 14,
+      "grants": 1,
+      "funding_eur": 7500.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 7,
+      "theses_aaltodoc": 40,
+      "grants": 4,
+      "funding_eur": 1444751.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 42,
+      "grants": 1,
+      "funding_eur": 482983.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 2,
+      "theses_aaltodoc": 9,
+      "grants": 1,
+      "funding_eur": 546079.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 5,
+      "theses_aaltodoc": 23,
+      "grants": 2,
+      "funding_eur": 761752.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 6,
+      "grants": 3,
+      "funding_eur": 1575724.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 2,
+      "theses_aaltodoc": 207,
+      "grants": 1,
+      "funding_eur": 516710.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 0,
+      "grants": 1,
+      "funding_eur": 638022.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 6,
+      "theses_aaltodoc": 105,
+      "grants": 10,
+      "funding_eur": 1779350.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 39,
+      "grants": 1,
+      "funding_eur": 1858013.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 0,
+      "grants": 3,
+      "funding_eur": 1074033.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 2,
+      "theses_aaltodoc": 11,
+      "grants": 3,
+      "funding_eur": 1398938.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 54,
+      "grants": 10,
+      "funding_eur": 6078275.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 45,
+      "grants": 5,
+      "funding_eur": 680225.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 4,
+      "theses_aaltodoc": 55,
+      "grants": 6,
+      "funding_eur": 1986248.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 5,
+      "grants": 1,
+      "funding_eur": 713765.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 5,
+      "theses_aaltodoc": 216,
+      "grants": 9,
+      "funding_eur": 3134382.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 2,
+      "theses_aaltodoc": 4,
+      "grants": 1,
+      "funding_eur": 587735.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 301,
+      "grants": 11,
+      "funding_eur": 3056179.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 2,
+      "theses_aaltodoc": 33,
+      "grants": 3,
+      "funding_eur": 1366208.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 7,
+      "theses_aaltodoc": 39,
+      "grants": 1,
+      "funding_eur": 248120.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 5,
+      "theses_aaltodoc": 101,
+      "grants": 9,
+      "funding_eur": 2304461.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 3,
+      "theses_aaltodoc": 63,
+      "grants": 3,
+      "funding_eur": 1351245.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 3,
+      "theses_aaltodoc": 312,
+      "grants": 2,
+      "funding_eur": 768862.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 3,
+      "theses_aaltodoc": 23,
+      "grants": 2,
+      "funding_eur": 799716.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 6,
+      "theses_aaltodoc": 48,
+      "grants": 12,
+      "funding_eur": 2977577.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 4,
+      "theses_aaltodoc": 30,
+      "grants": 18,
+      "funding_eur": 6592407.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 7,
+      "theses_aaltodoc": 88,
+      "grants": 13,
+      "funding_eur": 6719860.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 2,
+      "theses_aaltodoc": 22,
+      "grants": 1,
+      "funding_eur": 16000.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 4,
+      "theses_aaltodoc": 335,
+      "grants": 1,
+      "funding_eur": 500000.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 4,
+      "theses_aaltodoc": 9,
+      "grants": 1,
+      "funding_eur": 561633.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 3,
+      "grants": 1,
+      "funding_eur": 636688.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 0,
+      "grants": 3,
+      "funding_eur": 1241102.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 131,
+      "grants": 9,
+      "funding_eur": 3359547.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 4,
+      "theses_aaltodoc": 29,
+      "grants": 7,
+      "funding_eur": 2110122.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 8,
+      "grants": 1,
+      "funding_eur": 599369.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 0,
+      "theses_aaltodoc": 4,
+      "grants": 1,
+      "funding_eur": 604302.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 3,
+      "theses_aaltodoc": 0,
+      "grants": 1,
+      "funding_eur": 594349.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 2,
+      "theses_aaltodoc": 14,
+      "grants": 2,
+      "funding_eur": 999876.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 20,
+      "grants": 1,
+      "funding_eur": 391606.0
+    },
+    {
+      "faculty": "Computer Science (CS)",
+      "theses_current": 1,
+      "theses_aaltodoc": 0,
+      "grants": 2,
+      "funding_eur": 959810.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 2,
+      "theses_aaltodoc": 70,
+      "grants": 1,
+      "funding_eur": 450476.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 0,
+      "theses_aaltodoc": 21,
+      "grants": 11,
+      "funding_eur": 6385281.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 0,
+      "theses_aaltodoc": 3,
+      "grants": 1,
+      "funding_eur": 549026.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 1,
+      "theses_aaltodoc": 11,
+      "grants": 6,
+      "funding_eur": 3034753.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 3,
+      "theses_aaltodoc": 171,
+      "grants": 7,
+      "funding_eur": 2795926.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 1,
+      "theses_aaltodoc": 58,
+      "grants": 3,
+      "funding_eur": 756333.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 3,
+      "theses_aaltodoc": 89,
+      "grants": 9,
+      "funding_eur": 2298116.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 3,
+      "theses_aaltodoc": 53,
+      "grants": 2,
+      "funding_eur": 483628.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 10,
+      "theses_aaltodoc": 233,
+      "grants": 3,
+      "funding_eur": 1596468.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 5,
+      "theses_aaltodoc": 18,
+      "grants": 1,
+      "funding_eur": 594126.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 5,
+      "theses_aaltodoc": 83,
+      "grants": 2,
+      "funding_eur": 1944828.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 3,
+      "theses_aaltodoc": 29,
+      "grants": 5,
+      "funding_eur": 1696669.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 3,
+      "theses_aaltodoc": 12,
+      "grants": 4,
+      "funding_eur": 896025.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 1,
+      "theses_aaltodoc": 0,
+      "grants": 1,
+      "funding_eur": 556000.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 0,
+      "theses_aaltodoc": 86,
+      "grants": 3,
+      "funding_eur": 1242673.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 5,
+      "theses_aaltodoc": 114,
+      "grants": 1,
+      "funding_eur": 479739.0
+    },
+    {
+      "faculty": "ELEC",
+      "theses_current": 1,
+      "theses_aaltodoc": 68,
+      "grants": 2,
+      "funding_eur": 831710.0
+    }
+  ]
+}
