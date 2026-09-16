@@ -2,26 +2,29 @@
 
 Do the professors who supervise the most master's theses also raise the most research funding?
 
-I pulled three open data sources and put one dot per supervisor on a single chart:
+I spent an evening answering this with nothing but open data. One anonymous dot per supervisor, ~100 of them across two Aalto University departments:
 
-📈 x-axis — lifetime number of theses supervised, counted from the university's thesis repository (~7,500 across this group)
-💶 y-axis — total research funding attributed to that person (their share, in € million)
+📈 x — lifetime master's theses supervised (from the university thesis repository)
+💶 y — total research funding attributed to that person (their share, € million)
 
-The answer, for the ~60 supervisors across two Aalto University departments who could be matched to a funding record: there is **no strong relationship**. Teaching-heavy supervisors with 250–380 archived theses sit on modest funding, while several of the best-funded have supervised comparatively few. Supervision volume and grant income look like two largely independent things.
+The result: **no strong relationship.** Some colleagues have archived 300+ supervised theses on modest funding; some of the best-funded have supervised comparatively few. Supervision load and grant income look like two largely independent things.
 
-A few honest notes, because the method matters:
-• People are matched by name across the sources; supervisors with no matching funding record are left out of this chart rather than plotted as zero.
-• The lifetime thesis count comes from full-text repository search on supervisor/advisor fields — a robust estimate, though namesakes and metadata gaps add noise.
-• "Funding" is each person's own share of every grant they appear on (no double-counting of consortia), cumulative over roughly 2014–2027 as covered by the funding database.
-• All points are anonymised — this is about the distribution, not individuals.
+But honestly, the more interesting part was getting the data *right*.
 
-📊 Data sources (all open):
-• Currently-supervised theses — Aalto University MyCourses public supervisor list (mycourses.aalto.fi)
-• Lifetime completed theses — Aaltodoc, Aalto's institutional repository (aaltodoc.aalto.fi, DSpace)
-• Research funding — research.fi, the Finnish national research information hub (granted-funding dataset, Ministry of Education and Culture / CSC)
+Naively matching people by name badly undercounts. The repository stores the same person under many forms — "Alex" vs "Alexander", title/affiliation suffixes, spacing quirks, diacritics (Stéphane/Stephane). So for each supervisor the script discovers every name form on record and merges only the ones that are genuinely the same name — while refusing to merge bare initials ("A." vs "Ari") or compound names ("Jari" vs "Jari-Pekka"), which would silently fold in a *different* person.
 
-Plot generated with a small Python script (pulls all three sources live) and rendered in TikZ/pgfplots.
+How do I know it works? I checked my own number against a list I maintain by hand at ml-theses.org: it shows 126 completed theses; the automated pipeline returns 127. Close enough to trust — and every merge is logged so false ones are visible.
 
-Would you expect a correlation in your field? Curious whether this flatness holds elsewhere.
+🔗 Full code, methodology and the (anonymous) plot:
+github.com/alexjungaalto/aalto-theses-vs-funding
 
-#OpenData #ResearchFunding #HigherEducation #DataViz #research
+📊 Data sources (all open, queried live):
+• Currently-supervised theses — Aalto MyCourses public supervisor list
+• Lifetime completed theses — Aaltodoc institutional repository (DSpace)
+• Research funding — research.fi, the Finnish national research information hub (Ministry of Education and Culture / CSC)
+
+Everything is anonymised — names are used only to run the queries, never stored or plotted. The point is the distribution, not individuals.
+
+Would you expect supervision and funding to correlate in your field? Curious whether this independence holds elsewhere.
+
+#OpenData #ResearchFunding #HigherEducation #DataViz #AcademicTwitter #research
