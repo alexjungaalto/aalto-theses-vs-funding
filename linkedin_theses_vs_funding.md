@@ -11,7 +11,7 @@ The result: **no strong relationship.** Some colleagues have archived 300+ super
 
 But honestly, the more interesting part was getting the data *right*.
 
-Naively matching people by name badly undercounts. The repository stores the same person under many forms — "Alex" vs "Alexander", title/affiliation suffixes, spacing quirks, diacritics (Stéphane/Stephane). So for each supervisor the script discovers every name form on record and merges only the ones that are genuinely the same name — while refusing to merge bare initials ("A." vs "Ari") or compound names ("Jari" vs "Jari-Pekka"), which would silently fold in a *different* person.
+Naively matching people by name badly undercounts. The repository stores the same person under many forms — a short given name vs its full spelling, title/affiliation suffixes, spacing quirks, accented vs unaccented letters. So for each supervisor the script discovers every name form on record and merges only the ones that are genuinely the same name — while refusing to merge bare initials or hyphenated compound names, which would silently fold in a *different* person.
 
 How do I know it works? I checked my own number against a list I maintain by hand at ml-theses.org: it shows 126 completed theses; the automated pipeline returns 127. Close enough to trust — and every merge is logged so false ones are visible.
 

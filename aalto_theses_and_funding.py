@@ -336,10 +336,10 @@ def _name_key(firstname: str) -> str:
     Reduce a given-name string to a clean comparison key: ASCII-fold, take the
     first name only, keep letters and internal hyphens, and stop at the first
     packing/punctuation character. So:
-        "Alexander, Prof., Aalto ..." -> "alexander"
-        "Samuel|Aurell"               -> "samuel"    (packed co-supervisor split off)
-        "Sergiy.,"                    -> "sergiy"
-        "Jari-Pekka"                  -> "jari-pekka" (hyphen kept: compound name)
+        "<Given>, Prof., Aalto ..." -> "<given>"
+        "<Given>|<CoName>"          -> "<given>"   (packed co-supervisor split off)
+        "<Given>.,"                 -> "<given>"
+        "<A>-<B>"                   -> "<a>-<b>"    (hyphen kept: compound name)
     """
     tok = _ascii_lower(firstname).lstrip()
     out = []
@@ -354,13 +354,16 @@ def _name_key(firstname: str) -> str:
 def _first_compatible(target_key: str, form_key: str) -> bool:
     """
     True only when two name keys are the SAME name, one possibly truncated:
-    "alex" ~ "alexander", "chris" ~ "christopher", "russel" ~ "russell". It
-    deliberately does NOT merge:
-      * bare single-letter initials ("a" vs "ari") — too ambiguous, and
-      * added name components ("jari" vs "jari-pekka") — a different identity,
-        detected because the extra characters begin with a hyphen.
-    It also cannot bridge non-prefix nicknames (Bob/Robert). Merges are always
-    reported in the audit so any residual false merge is visible.
+    a short given name vs its longer spelling, or a spelling that drops one
+    trailing letter. It deliberately does NOT merge:
+      * bare single-letter initials (an "X." vs a full given name) — too
+        ambiguous, and
+      * added name components (one part vs a hyphenated compound name) — a
+        different identity, detected because the extra characters begin with a
+        hyphen.
+    It also cannot bridge non-prefix nicknames (a familiar form unrelated to the
+    formal given name). Merges are always reported in the audit so any residual
+    false merge is visible.
     """
     a, b = target_key, form_key
     if not a or not b:
@@ -409,7 +412,7 @@ def _discover_surname_forms(
                     val = v["value"]
                     if "," in val:
                         surname, rest = val.split(",", 1)
-                    else:  # e.g. "Karhunen Juha, Prof."
+                    else:  # e.g. "<Surname> <Given>, Prof." (no comma separator)
                         toks = val.split()
                         surname = toks[0] if toks else ""
                         rest = " ".join(toks[1:])
@@ -462,9 +465,9 @@ def fetch_aaltodoc_thesis_count(
         query = " OR ".join(f'{fld}:"{last}, {first}"' for fld in fields)
         cnt = _aaltodoc_get(query)["_embedded"]["searchResult"]["page"]["totalElements"]
         return int(cnt), [target] if target else [], truncated
-    # Count the deduped union. A hyphenated key ("jari-pekka") becomes an
-    # ordered phrase ("jari pekka") so it matches the compound name but not the
-    # bare "Jari"; a simple key matches its token anywhere in the field value.
+    # Count the deduped union. A hyphenated key becomes an ordered phrase (its
+    # two parts, space-separated) so it matches the compound name but not the
+    # bare single part; a simple key matches its token anywhere in the value.
     clauses = [
         f'{fld}:"{last}, {form.replace("-", " ")}"' for form in kept for fld in fields
     ]

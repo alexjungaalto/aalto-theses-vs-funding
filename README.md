@@ -46,25 +46,24 @@ Useful flags:
   queries; they are never printed, plotted, or written to disk. Every output
   record is `(faculty, theses, grants, funding_eur)`.
 - **Name matching handles first-name variants, honestly.** Aaltodoc records the
-  same person under many forms — short/long given names (*Alex* / *Alexander*),
-  title/affiliation suffixes (`"Kaski, Samuel, Prof., Aalto University…"`),
-  spacing and punctuation quirks, and diacritics (*Stéphane* / *Stephane*). For
-  each supervisor the script **discovers every given-name form stored for their
-  surname**, then merges only the forms that are the *same name truncated*
-  (Alex↔Alexander, Chris↔Christopher, Russel↔Russell). It deliberately does
-  **not** merge bare initials (*A.* vs *Ari*) or added name components
-  (*Jari* vs *Jari-Pekka*), which would inflate the count for a different
-  person. Across this dataset ~half the supervisors had at least one variant
-  merged. Validated against the self-maintained list at **ml-theses.org**
-  (126 completed theses for one supervisor; this method returns 127).
+  same person under many forms — short/long given names (a short form vs its
+  full spelling), title/affiliation suffixes (`"<Surname>, <Given>, Prof., Aalto
+  University…"`), spacing and punctuation quirks, and diacritics (accented vs
+  unaccented). For each supervisor the script **discovers every given-name form
+  stored for their surname**, then merges only the forms that are the *same name
+  truncated*. It deliberately does **not** merge bare initials (an *X.* vs a full
+  given name) or added name components (one part vs a hyphenated compound name),
+  which would inflate the count for a different person. Validated against one
+  supervisor's own hand-maintained public thesis list (126 completed theses;
+  this method returns 127).
 - **Auditability.** Run with `--audit-names PATH` to dump a local,
   non-anonymous CSV of exactly which name forms were merged for each person, so
   any residual false merge is visible. That file is intentionally **not**
   included here (it contains names).
-- Remaining limits: non-prefix nicknames (Bob/Robert) are not bridged
-  (undercount), and two real people who share a surname and a first-name prefix
-  (Alex / Alexandra) can still merge (rare, and surfaced by the audit). Treat
-  counts as good estimates, not exact.
+- Remaining limits: non-prefix nicknames (a familiar form unrelated to the
+  formal given name) are not bridged (undercount), and two real people who share
+  a surname and a first-name prefix can still merge (rare, and surfaced by the
+  audit). Treat counts as good estimates, not exact.
 - **Funding** is each person's own share (`shareOfFundingInEur`) of every grant
   they appear on, so consortia are not double-counted; cumulative over roughly
   2014–2027 as covered by the research.fi funding dataset.
