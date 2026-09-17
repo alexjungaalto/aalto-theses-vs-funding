@@ -24,17 +24,26 @@ the exported data are anonymised (one dot per supervisor, no labels).
    the grand total across all ~23.7k grants; pass --funding-query to restrict it
    (e.g. to a funder or recipient organisation).
 
-3. (--tikz/--png) Per-supervisor lifetime thesis count, estimated by searching
-   Aaltodoc, Aalto's DSpace repository of completed theses, for each supervisor:
+3. (--tikz/--png) Per-supervisor lifetime master's-thesis count, estimated by
+   searching Aaltodoc, Aalto's DSpace repository of completed theses, for each
+   supervisor:
        GET https://aaltodoc.aalto.fi/server/api/discover/search/objects
-   matching dc.contributor.supervisor (and .advisor with --include-advisor).
+   matching dc.contributor.supervisor (and .advisor with --include-advisor), and
+   restricted to master's-thesis records (dc.type.ontasot = "Master's thesis")
+   so doctoral dissertations, licentiate and bachelor's theses are NOT counted;
+   pass --all-levels to count every level instead. Counts are further limited to
+   a publication-year window on dc.date.issued (default 2017–2025); override with
+   --year-min/--year-max (use 'all' to open a side).
    The repository records the same person under several name forms (short/long
    given names, title/affiliation suffixes, spacing quirks), so for each
    supervisor we discover all forms stored for their surname, merge the ones
    whose first name is prefix-compatible in either direction, and count the
    deduped union. Pass --audit-names to dump exactly which forms were merged.
    This is the default X-axis of the scatter (the MyCourses figure only counts
-   theses *currently* in supervision); use --x-metric current for that instead.
+   master's theses *currently* in supervision); use --x-metric current for that.
+   For the scatter, each supervisor's research.fi funding (the Y-axis) is scoped
+   to the SAME window via fundingStartYear, so both axes cover 2017–2025 rather
+   than comparing recent theses against all-time funding.
 
 Usage:
     python3 aalto_theses_and_funding.py
@@ -63,6 +72,13 @@ RESEARCHFI_API = (
 AALTODOC_API = "https://aaltodoc.aalto.fi/server/api/discover/search/objects"
 USER_AGENT = "Mozilla/5.0 (aalto-theses-funding-report)"
 TIMEOUT = 30
+
+# Default publication window, applied to BOTH the Aaltodoc master's-thesis count
+# (dc.date.issued) and each supervisor's research.fi funding (fundingStartYear),
+# so the two scatter axes cover the same years. Set either side to None (via
+# --year-min/--year-max all) to leave it open.
+_DEFAULT_YEAR_MIN = 2017
+_DEFAULT_YEAR_MAX = 2025
 
 
 # --------------------------------------------------------------------------- #
@@ -271,18 +287,37 @@ def _person_clause(first: str, last: str) -> dict:
     return {"bool": {"must": must}}
 
 
-def fetch_supervisor_funding(first: str, last: str) -> dict:
+def fetch_supervisor_funding(
+    first: str,
+    last: str,
+    year_min: int | None = _DEFAULT_YEAR_MIN,
+    year_max: int | None = _DEFAULT_YEAR_MAX,
+) -> dict:
     """
     Total funding attributed to one person on research.fi: the sum of their
-    `shareOfFundingInEur` across every grant whose funding group includes them.
+    `shareOfFundingInEur` across every grant whose funding group includes them
+    and whose funding start year (`fundingStartYear`) falls in [year_min,
+    year_max]. Pass year_min/year_max=None to leave that side open (all-time).
+
+    The window is applied on fundingStartYear, the only reliable date on these
+    records (fundingEndYear is frequently a 1900 placeholder), so the y-axis is
+    scoped to the same period as the master's-thesis x-axis.
     """
     if not last:
         return {"grants": 0, "funding_eur": 0.0}
     clause = _person_clause(first, last)
+    outer_must: list = [{"nested": {"path": "fundingGroupPerson", "query": clause}}]
+    if year_min is not None or year_max is not None:
+        rng: dict = {}
+        if year_min is not None:
+            rng["gte"] = year_min
+        if year_max is not None:
+            rng["lte"] = year_max
+        outer_must.append({"range": {"fundingStartYear": rng}})
     body = {
         "size": 0,
         "track_total_hits": True,
-        "query": {"nested": {"path": "fundingGroupPerson", "query": clause}},
+        "query": {"bool": {"must": outer_must}},
         "aggs": {
             "fgp": {
                 "nested": {"path": "fundingGroupPerson"},
@@ -318,6 +353,17 @@ def fetch_supervisor_funding(first: str, last: str) -> dict:
 
 _SUP_FIELD = "dc.contributor.supervisor"
 _ADV_FIELD = "dc.contributor.advisor"
+# Aaltodoc tags each item's academic level in dc.type.ontasot. Every master's
+# thesis carries the English umbrella value "Master's thesis" (covering both
+# "Diplomityö" and "Pro gradu"); bachelor's theses, licentiate theses and
+# doctoral dissertations carry their own values. Restricting counts to this
+# value is what makes the figure "master's theses supervised" rather than "all
+# theses + dissertations supervised". Use the English value, not "Diplomityö",
+# which alone would miss pro gradu master's theses.
+_MASTER_LEVEL_CLAUSE = 'dc.type.ontasot:"Master\'s thesis"'
+# dc.date.issued is stored as full ISO dates (e.g. "2025-05-26"); a [MIN TO MAX]
+# range on it is inclusive of the whole of both boundary years. The window
+# defaults live near the top of the module (_DEFAULT_YEAR_MIN/_MAX).
 
 
 def _ascii_lower(s: str) -> str:
@@ -430,23 +476,57 @@ def _discover_surname_forms(
     return forms, truncated
 
 
+def _with_filters(
+    name_query: str, master_only: bool, year_min: int | None, year_max: int | None
+) -> str:
+    """
+    AND the level and publication-year restrictions onto an OR-group of name
+    clauses. A [year_min TO year_max] range on dc.date.issued is inclusive of the
+    whole of both boundary years; either bound may be None to leave that side open.
+    """
+    query = f"({name_query})"
+    if master_only:
+        query += f" AND {_MASTER_LEVEL_CLAUSE}"
+    if year_min is not None or year_max is not None:
+        lo = str(year_min) if year_min is not None else "*"
+        hi = str(year_max) if year_max is not None else "*"
+        query += f" AND dc.date.issued:[{lo} TO {hi}]"
+    return query
+
+
 def fetch_aaltodoc_thesis_count(
-    first: str, last: str, include_advisor: bool = False
+    first: str,
+    last: str,
+    include_advisor: bool = False,
+    master_only: bool = True,
+    year_min: int | None = _DEFAULT_YEAR_MIN,
+    year_max: int | None = _DEFAULT_YEAR_MAX,
 ) -> tuple[int, list, bool]:
     """
-    Estimate a supervisor's lifetime thesis count from Aaltodoc (Aalto's DSpace
-    repository of completed theses), honestly merging first-name variants.
+    Estimate a supervisor's master's-thesis count from Aaltodoc (Aalto's DSpace
+    repository of completed theses) over a publication-year window, honestly
+    merging first-name variants.
 
     Method:
       1. Discover every given-name form the repository stores for this surname
          (handles title/affiliation suffixes, missing commas, spacing).
       2. Keep the forms prefix-compatible with the target first name, in BOTH
          directions (so short->long AND long->short are covered).
-      3. Count the deduped union of those forms as a phrase query.
+      3. Count the deduped union of those forms as a phrase query, restricted to
+         master's-thesis records only (dc.type.ontasot) and to the
+         [year_min, year_max] window on dc.date.issued, so doctoral
+         dissertations, licentiate and bachelor's theses, and theses outside the
+         window are NOT counted.
+
+    Name-form discovery in step 1 is deliberately left unfiltered (a name variant
+    is a name variant regardless of level or year), so the filters never weaken
+    name matching; they only narrow what is finally counted.
 
     Supervisor field only by default (the "responsible professor" role, which
     matches how the self-maintained ml-theses.org counts supervision); pass
-    include_advisor=True to also count advisor/instructor roles.
+    include_advisor=True to also count advisor/instructor roles. Pass
+    master_only=False to count all thesis/dissertation levels, and
+    year_min/year_max=None to leave that side of the window open.
 
     Returns (count, merged_first_forms, truncated). merged_first_forms lets the
     caller audit exactly which name variants were combined.
@@ -462,7 +542,8 @@ def fetch_aaltodoc_thesis_count(
         # the MyCourses name so we still return a best-effort number.
         if not first:
             return 0, [], truncated
-        query = " OR ".join(f'{fld}:"{last}, {first}"' for fld in fields)
+        name_query = " OR ".join(f'{fld}:"{last}, {first}"' for fld in fields)
+        query = _with_filters(name_query, master_only, year_min, year_max)
         cnt = _aaltodoc_get(query)["_embedded"]["searchResult"]["page"]["totalElements"]
         return int(cnt), [target] if target else [], truncated
     # Count the deduped union. A hyphenated key becomes an ordered phrase (its
@@ -471,13 +552,17 @@ def fetch_aaltodoc_thesis_count(
     clauses = [
         f'{fld}:"{last}, {form.replace("-", " ")}"' for form in kept for fld in fields
     ]
-    query = " OR ".join(clauses)
+    name_query = " OR ".join(clauses)
+    query = _with_filters(name_query, master_only, year_min, year_max)
     cnt = _aaltodoc_get(query)["_embedded"]["searchResult"]["page"]["totalElements"]
     return int(cnt), kept, truncated
 
 
 def build_supervisor_points(
-    theses: dict, workers: int = 8, include_advisor: bool = False
+    theses: dict, workers: int = 8, include_advisor: bool = False,
+    master_only: bool = True,
+    year_min: int | None = _DEFAULT_YEAR_MIN,
+    year_max: int | None = _DEFAULT_YEAR_MAX,
 ) -> list[dict]:
     """
     Flatten faculties into supervisor records and look up funding for each.
@@ -497,12 +582,15 @@ def build_supervisor_points(
 
     def _lookup(q: dict) -> tuple:
         try:
-            fund = fetch_supervisor_funding(q["first"], q["last"])
+            fund = fetch_supervisor_funding(
+                q["first"], q["last"], year_min, year_max
+            )
         except Exception:  # noqa: BLE001 - keep the point, mark funding unknown
             fund = {"grants": 0, "funding_eur": 0.0}
         try:
             adoc, forms, truncated = fetch_aaltodoc_thesis_count(
-                q["first"], q["last"], include_advisor
+                q["first"], q["last"], include_advisor, master_only,
+                year_min, year_max,
             )
         except Exception:  # noqa: BLE001 - keep the point, mark count unknown
             adoc, forms, truncated = 0, [], False
@@ -510,8 +598,8 @@ def build_supervisor_points(
         # and whether discovery was truncated, so the estimate stays honest.
         point = {
             "faculty": q["faculty"],
-            "theses_current": q["theses"],       # currently supervised (MyCourses)
-            "theses_aaltodoc": adoc,             # lifetime completed (Aaltodoc)
+            "theses_current": q["theses"],       # master's, currently supervised (MyCourses)
+            "theses_aaltodoc": adoc,             # completed master's theses in window (Aaltodoc)
             "aaltodoc_name_forms": len(forms),   # # of first-name variants merged
             "aaltodoc_truncated": truncated,
             "grants": fund["grants"],
@@ -547,7 +635,8 @@ _PALETTE = [
 
 
 def plot_scatter_png(
-    points: list[dict], path: str, x_field: str, x_label: str
+    points: list[dict], path: str, x_field: str, x_label: str,
+    y_label: str = "Total funding on research.fi (million EUR)",
 ) -> None:
     """Anonymous preview PNG (no names/labels), larger markers."""
     import matplotlib
@@ -576,7 +665,7 @@ def plot_scatter_png(
             label=f,
         )
     ax.set_xlabel(x_label)
-    ax.set_ylabel("Total funding on research.fi (million EUR)")
+    ax.set_ylabel(y_label)
     ax.set_title("Thesis supervision vs. research funding")
     ax.grid(True, alpha=0.3)
     ax.legend(title="Faculty/dept", frameon=False)
@@ -586,7 +675,8 @@ def plot_scatter_png(
 
 
 def plot_scatter_tikz(
-    points: list[dict], path: str, x_field: str, x_label: str
+    points: list[dict], path: str, x_field: str, x_label: str,
+    y_label: str = "Total funding on research.fi (million EUR)",
 ) -> None:
     """
     Write a standalone, compilable TikZ/pgfplots scatter plot.
@@ -610,7 +700,7 @@ def plot_scatter_tikz(
     lines.append(r"\begin{axis}[")
     lines.append(r"    width=14cm, height=9.5cm,")
     lines.append(rf"    xlabel={{{x_label}}},")
-    lines.append(r"    ylabel={Total funding on research.fi (million EUR)},")
+    lines.append(rf"    ylabel={{{y_label}}},")
     lines.append(r"    title={Thesis supervision load vs.\ research funding},")
     lines.append(r"    grid=both, grid style={gray!18},")
     lines.append(r"    axis lines=left,")
@@ -730,6 +820,27 @@ def main() -> int:
         "matches how ml-theses.org counts supervision.",
     )
     ap.add_argument(
+        "--all-levels",
+        action="store_true",
+        help="Count all thesis/dissertation levels in Aaltodoc. Default: "
+        "master's theses only (dc.type.ontasot = \"Master's thesis\"), so "
+        "doctoral dissertations, licentiate and bachelor's theses are excluded.",
+    )
+    ap.add_argument(
+        "--year-min",
+        default=str(_DEFAULT_YEAR_MIN),
+        metavar="YEAR",
+        help=f"Earliest publication year to count in Aaltodoc (dc.date.issued). "
+        f"Default {_DEFAULT_YEAR_MIN}. Use 'all' for no lower bound.",
+    )
+    ap.add_argument(
+        "--year-max",
+        default=str(_DEFAULT_YEAR_MAX),
+        metavar="YEAR",
+        help=f"Latest publication year to count in Aaltodoc (inclusive of the "
+        f"whole year). Default {_DEFAULT_YEAR_MAX}. Use 'all' for no upper bound.",
+    )
+    ap.add_argument(
         "--audit-names",
         metavar="PATH",
         default=None,
@@ -738,6 +849,17 @@ def main() -> int:
         "Do not publish this file.",
     )
     args = ap.parse_args()
+
+    def _parse_year(val: str) -> int | None:
+        if val.strip().lower() == "all":
+            return None
+        try:
+            return int(val)
+        except ValueError:
+            ap.error(f"--year-* must be a 4-digit year or 'all', got {val!r}")
+
+    year_min = _parse_year(args.year_min)
+    year_max = _parse_year(args.year_max)
 
     try:
         html = _fetch(MYCOURSES_URL)
@@ -758,15 +880,24 @@ def main() -> int:
     if args.tikz or args.png:
         print("\nLooking up per-supervisor funding on research.fi ...", flush=True)
         points, audit = build_supervisor_points(
-            theses, include_advisor=args.include_advisor
+            theses, include_advisor=args.include_advisor,
+            master_only=not args.all_levels,
+            year_min=year_min, year_max=year_max,
         )
         matched = sum(1 for p in points if p["funding_eur"] > 0)
         total_aaltodoc = sum(p["theses_aaltodoc"] for p in points)
         merged = sum(1 for p in points if p["aaltodoc_name_forms"] > 1)
         truncated = sum(1 for p in points if p["aaltodoc_truncated"])
+        level_word = "theses (all levels)" if args.all_levels else "master's theses"
+        window = (
+            f"{year_min if year_min is not None else '…'}–"
+            f"{year_max if year_max is not None else '…'}"
+            if (year_min is not None or year_max is not None)
+            else "all years"
+        )
         print(
-            f"  Aaltodoc: {total_aaltodoc:,} completed theses across "
-            f"{len(points)} supervisors "
+            f"  Aaltodoc: {total_aaltodoc:,} completed {level_word} ({window}) "
+            f"across {len(points)} supervisors "
             f"(vs {theses['total_theses']} currently in supervision)"
         )
         print(
@@ -792,20 +923,23 @@ def main() -> int:
             print(f"  matched-only: kept {len(points)}, dropped {dropped} zero-funding")
 
         x_field = "theses_aaltodoc" if args.x_metric == "aaltodoc" else "theses_current"
+        level_word = "theses" if args.all_levels else "master's theses"
         x_label = (
-            "Completed theses supervised (Aaltodoc, lifetime)"
+            f"Completed {level_word} supervised (Aaltodoc, {window})"
             if args.x_metric == "aaltodoc"
-            else "Theses currently in supervision (MyCourses)"
+            else "Master's theses currently in supervision (MyCourses)"
         )
+        y_window = "" if window == "all years" else f", {window} start"
+        y_label = f"Research funding on research.fi (million EUR{y_window})"
         try:
             if args.tikz:
-                plot_scatter_tikz(points, args.tikz, x_field, x_label)
+                plot_scatter_tikz(points, args.tikz, x_field, x_label, y_label)
                 print(
                     f"Wrote {args.tikz} "
                     f"({len(points)} supervisors, {matched} with matched funding)"
                 )
             if args.png:
-                plot_scatter_png(points, args.png, x_field, x_label)
+                plot_scatter_png(points, args.png, x_field, x_label, y_label)
                 print(f"Wrote {args.png}")
         except Exception as exc:  # noqa: BLE001
             print(f"ERROR building scatter plot: {exc}", file=sys.stderr)

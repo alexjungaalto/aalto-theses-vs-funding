@@ -24,16 +24,16 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 1,
-      "theses_aaltodoc": 35,
+      "theses_aaltodoc": 20,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 3,
-      "funding_eur": 3228722.0
+      "grants": 1,
+      "funding_eur": 531066.0
     },
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 8,
-      "theses_aaltodoc": 127,
+      "theses_aaltodoc": 114,
       "aaltodoc_name_forms": 2,
       "aaltodoc_truncated": false,
       "grants": 7,
@@ -42,7 +42,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 3,
-      "theses_aaltodoc": 7,
+      "theses_aaltodoc": 5,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -51,7 +51,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 13,
+      "theses_aaltodoc": 6,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -60,7 +60,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 7,
-      "theses_aaltodoc": 40,
+      "theses_aaltodoc": 29,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 4,
@@ -69,7 +69,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 1,
-      "theses_aaltodoc": 41,
+      "theses_aaltodoc": 38,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -78,7 +78,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 2,
-      "theses_aaltodoc": 9,
+      "theses_aaltodoc": 7,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -87,7 +87,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 5,
-      "theses_aaltodoc": 23,
+      "theses_aaltodoc": 14,
       "aaltodoc_name_forms": 2,
       "aaltodoc_truncated": false,
       "grants": 2,
@@ -96,7 +96,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 6,
+      "theses_aaltodoc": 3,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -105,7 +105,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 2,
-      "theses_aaltodoc": 206,
+      "theses_aaltodoc": 49,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -113,26 +113,17 @@
     },
     {
       "faculty": "Computer Science (CS)",
-      "theses_current": 1,
-      "theses_aaltodoc": 5,
-      "aaltodoc_name_forms": 1,
-      "aaltodoc_truncated": false,
-      "grants": 1,
-      "funding_eur": 638022.0
-    },
-    {
-      "faculty": "Computer Science (CS)",
       "theses_current": 6,
-      "theses_aaltodoc": 105,
+      "theses_aaltodoc": 51,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 10,
-      "funding_eur": 1779350.0
+      "grants": 9,
+      "funding_eur": 1266605.0
     },
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 39,
+      "theses_aaltodoc": 28,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -141,7 +132,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 16,
+      "theses_aaltodoc": 12,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -150,7 +141,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 2,
-      "theses_aaltodoc": 11,
+      "theses_aaltodoc": 8,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -159,7 +150,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 54,
+      "theses_aaltodoc": 34,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 10,
@@ -168,7 +159,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 1,
-      "theses_aaltodoc": 43,
+      "theses_aaltodoc": 22,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 5,
@@ -177,7 +168,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 4,
-      "theses_aaltodoc": 55,
+      "theses_aaltodoc": 48,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 6,
@@ -186,7 +177,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 5,
+      "theses_aaltodoc": 4,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -195,16 +186,16 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 5,
-      "theses_aaltodoc": 206,
+      "theses_aaltodoc": 57,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 9,
-      "funding_eur": 3134382.0
+      "grants": 5,
+      "funding_eur": 1691068.0
     },
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 2,
-      "theses_aaltodoc": 4,
+      "theses_aaltodoc": 0,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -213,16 +204,16 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 294,
+      "theses_aaltodoc": 38,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 11,
-      "funding_eur": 3056179.0
+      "grants": 9,
+      "funding_eur": 2717933.0
     },
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 2,
-      "theses_aaltodoc": 33,
+      "theses_aaltodoc": 24,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -231,7 +222,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 7,
-      "theses_aaltodoc": 39,
+      "theses_aaltodoc": 30,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -240,16 +231,16 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 5,
-      "theses_aaltodoc": 100,
+      "theses_aaltodoc": 13,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 9,
-      "funding_eur": 2304461.0
+      "grants": 6,
+      "funding_eur": 850865.0
     },
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 3,
-      "theses_aaltodoc": 63,
+      "theses_aaltodoc": 53,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -258,7 +249,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 3,
-      "theses_aaltodoc": 312,
+      "theses_aaltodoc": 115,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 2,
@@ -267,7 +258,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 3,
-      "theses_aaltodoc": 23,
+      "theses_aaltodoc": 21,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 2,
@@ -276,16 +267,16 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 6,
-      "theses_aaltodoc": 48,
+      "theses_aaltodoc": 42,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 12,
-      "funding_eur": 2977577.0
+      "grants": 7,
+      "funding_eur": 2449773.0
     },
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 4,
-      "theses_aaltodoc": 30,
+      "theses_aaltodoc": 24,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 18,
@@ -294,7 +285,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 7,
-      "theses_aaltodoc": 87,
+      "theses_aaltodoc": 68,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 13,
@@ -303,7 +294,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 2,
-      "theses_aaltodoc": 22,
+      "theses_aaltodoc": 4,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -312,7 +303,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 4,
-      "theses_aaltodoc": 335,
+      "theses_aaltodoc": 128,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -320,35 +311,17 @@
     },
     {
       "faculty": "Computer Science (CS)",
-      "theses_current": 4,
-      "theses_aaltodoc": 9,
-      "aaltodoc_name_forms": 1,
-      "aaltodoc_truncated": false,
-      "grants": 1,
-      "funding_eur": 561633.0
-    },
-    {
-      "faculty": "Computer Science (CS)",
       "theses_current": 1,
-      "theses_aaltodoc": 3,
-      "aaltodoc_name_forms": 1,
-      "aaltodoc_truncated": false,
-      "grants": 1,
-      "funding_eur": 636688.0
-    },
-    {
-      "faculty": "Computer Science (CS)",
-      "theses_current": 1,
-      "theses_aaltodoc": 10,
+      "theses_aaltodoc": 7,
       "aaltodoc_name_forms": 2,
       "aaltodoc_truncated": false,
-      "grants": 3,
-      "funding_eur": 1241102.0
+      "grants": 2,
+      "funding_eur": 725742.0
     },
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 131,
+      "theses_aaltodoc": 32,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 9,
@@ -357,7 +330,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 4,
-      "theses_aaltodoc": 29,
+      "theses_aaltodoc": 27,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 7,
@@ -365,17 +338,8 @@
     },
     {
       "faculty": "Computer Science (CS)",
-      "theses_current": 1,
-      "theses_aaltodoc": 8,
-      "aaltodoc_name_forms": 1,
-      "aaltodoc_truncated": false,
-      "grants": 1,
-      "funding_eur": 599369.0
-    },
-    {
-      "faculty": "Computer Science (CS)",
       "theses_current": 0,
-      "theses_aaltodoc": 4,
+      "theses_aaltodoc": 2,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -384,7 +348,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 3,
-      "theses_aaltodoc": 15,
+      "theses_aaltodoc": 11,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -393,7 +357,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 2,
-      "theses_aaltodoc": 14,
+      "theses_aaltodoc": 11,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 2,
@@ -402,7 +366,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 1,
-      "theses_aaltodoc": 233,
+      "theses_aaltodoc": 96,
       "aaltodoc_name_forms": 2,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -411,7 +375,7 @@
     {
       "faculty": "Computer Science (CS)",
       "theses_current": 1,
-      "theses_aaltodoc": 10,
+      "theses_aaltodoc": 9,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 2,
@@ -420,7 +384,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 2,
-      "theses_aaltodoc": 70,
+      "theses_aaltodoc": 11,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -429,7 +393,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 0,
-      "theses_aaltodoc": 21,
+      "theses_aaltodoc": 17,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 11,
@@ -438,7 +402,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 0,
-      "theses_aaltodoc": 3,
+      "theses_aaltodoc": 2,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -447,25 +411,25 @@
     {
       "faculty": "ELEC",
       "theses_current": 1,
-      "theses_aaltodoc": 11,
+      "theses_aaltodoc": 8,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 6,
-      "funding_eur": 3034753.0
+      "grants": 5,
+      "funding_eur": 2335275.0
     },
     {
       "faculty": "ELEC",
       "theses_current": 3,
-      "theses_aaltodoc": 171,
+      "theses_aaltodoc": 45,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 7,
-      "funding_eur": 2795926.0
+      "grants": 6,
+      "funding_eur": 2195926.0
     },
     {
       "faculty": "ELEC",
       "theses_current": 1,
-      "theses_aaltodoc": 58,
+      "theses_aaltodoc": 9,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -474,7 +438,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 3,
-      "theses_aaltodoc": 89,
+      "theses_aaltodoc": 59,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 9,
@@ -483,7 +447,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 3,
-      "theses_aaltodoc": 53,
+      "theses_aaltodoc": 28,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 2,
@@ -492,7 +456,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 10,
-      "theses_aaltodoc": 233,
+      "theses_aaltodoc": 70,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -501,7 +465,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 5,
-      "theses_aaltodoc": 18,
+      "theses_aaltodoc": 13,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -510,16 +474,16 @@
     {
       "faculty": "ELEC",
       "theses_current": 5,
-      "theses_aaltodoc": 83,
+      "theses_aaltodoc": 60,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
-      "grants": 2,
-      "funding_eur": 1944828.0
+      "grants": 1,
+      "funding_eur": 445038.0
     },
     {
       "faculty": "ELEC",
       "theses_current": 3,
-      "theses_aaltodoc": 29,
+      "theses_aaltodoc": 23,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 5,
@@ -528,7 +492,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 3,
-      "theses_aaltodoc": 12,
+      "theses_aaltodoc": 6,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 4,
@@ -537,7 +501,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 1,
-      "theses_aaltodoc": 68,
+      "theses_aaltodoc": 25,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -546,7 +510,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 0,
-      "theses_aaltodoc": 86,
+      "theses_aaltodoc": 21,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 3,
@@ -555,7 +519,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 5,
-      "theses_aaltodoc": 114,
+      "theses_aaltodoc": 34,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 1,
@@ -564,7 +528,7 @@
     {
       "faculty": "ELEC",
       "theses_current": 1,
-      "theses_aaltodoc": 68,
+      "theses_aaltodoc": 17,
       "aaltodoc_name_forms": 1,
       "aaltodoc_truncated": false,
       "grants": 2,
